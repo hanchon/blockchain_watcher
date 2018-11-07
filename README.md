@@ -4,7 +4,7 @@ This is simple tool to request the blockchain information using RPC calls to sev
 
 # Requirements:
 
-* [Node] (https://docs.hanchon.io/utils/install-node-version-manager)
+* [Node](https://docs.hanchon.io/utils/install-node-version-manager)
 
 
 # Configuration
