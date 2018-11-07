@@ -1,0 +1,42 @@
+html
+  head
+    link(rel="stylesheet", href="style.css")
+    title= "Node status"
+  body
+    h1= "Node status"
+    each val in block
+      h3= val.name 
+      h3= val.ip
+      h3 Current tip
+      h4= val.lastBlock.height
+      h4= val.lastBlock.hash
+      table
+          tr 
+            th Hash
+            th Height
+            th Chainwork
+            th Difficulty
+            th Coinbase Output Script
+            th Time
+            th MedianTime
+            th Previous Hash
+            th Transactions
+            th Size
+
+          each block_data in val.data
+            tr
+              td= block_data.hash
+              td= block_data.height
+              td= block_data.chainwork
+              td= block_data.difficulty
+              td= block_data.coinbase_script
+              td= block_data.time
+              td= block_data.mediantime
+              td= block_data.prevhash
+              td= block_data.txns
+              td= block_data.size
+
+
+     
+       
+      
