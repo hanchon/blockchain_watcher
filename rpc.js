@@ -53,6 +53,10 @@ module.exports = class RPC {
         return this.GenericRequest("getrawtransaction", [hash]);
     }
 
+    GetBlockNoVerbose(hash){
+        return this.GenericRequest("getblock", [hash, 0]);
+    }
+
     async GetLastHash() {
         let info = await this.GetBlockchainInfo();
         // console.log(info);
@@ -87,6 +91,11 @@ module.exports = class RPC {
         let last_hash = await this.GetLastHash();
         let data = await this.GetBlockData(last_hash)
         return data;
+    }
+
+    async GetRawBlock(hash) {
+        let res = await this.GetBlockNoVerbose(hash);
+        return res;
     }
     
 }

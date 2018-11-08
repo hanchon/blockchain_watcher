@@ -2,11 +2,7 @@
 
 var express = require('express');
 var app = express();
-// var request = require('request');
-// var server = require('http').createServer(app);
-// var io = require('socket.io')(server);
 
-// var bitcore = require('bitcore-lib-cash');
 var DB = require('./db.js');
 var RPC = require('./rpc.js');
 
@@ -91,5 +87,5 @@ app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'pug')
 
 app.get('/', function (req, res) {
-    res.render('index', { title: 'Heya', message: 'Hello there!', block: displayData})
+    res.render('index', { block: displayData })
 })
