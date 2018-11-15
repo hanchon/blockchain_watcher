@@ -3,17 +3,28 @@ html
     link(rel="stylesheet", href="style.css")
     title= "Node status"
   body
-    h1= "Node status"
-    h2= "Activation time: 1542300000"
+    h1.title= "Node status"
+    h2.title= "Activation time: 1542300000 | Activation height: 556766"
+
+    h1.center Top block:
+
+    each val in block
+      div.center
+        if val.name == "BitcoinABC" || val.name == "BitcoinSV"
+          h2= val.name
+          //- h3= val.ip
+          h4= "Height: " + val.lastBlock.height + ". Hash: " + val.lastBlock.hash
+          h4= "Time: " + val.lastBlock.time + ". Median Time: " + val.lastBlock.medianTime
+          h4= "Difficulty: " + val.data[0].difficulty + ". ChainWork: " + val.data[0].chainwork.replace(/^0+/, '')
+
+    h1.center Last Blocks:
+
     each val in block
       if val.name == "BitcoinABC" || val.name == "BitcoinSV"
-        h3= val.name 
-        //- h3= val.ip
-        h3 Current Time
-        h4= "Time: " + val.lastBlock.time + ". Median Time: " + val.lastBlock.medianTime
-        h3 Current tip
-        h4= "Height: " + val.lastBlock.height + ". Hash: " + val.lastBlock.hash
-        table
+        div.center
+          h3= val.name
+          //- h3= val.ip
+          table(id="forks")
             tr 
               th Hash
               th Height
@@ -37,16 +48,17 @@ html
                 td= block_data.txns
                 td= block_data.size
       else
-        h3= val.name 
-        //- h3= val.ip
-        table
+        div(align="center")
+          table(id="forks")
+            h3= val.name
             tr 
               th Hash
               th Height
-            each block_data in val.data
-              tr
-                td= block_data.hash
-                td= block_data.height
+              each block_data in val.data
+                tr
+                  td= block_data.hash
+                  td= block_data.height
+
 
 
      

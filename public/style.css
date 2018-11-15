@@ -7,8 +7,8 @@ body {
 #forks {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 85%;
     align-self: "center";
+
 }
 
 #forks td,
@@ -31,4 +31,15 @@ body {
     text-align: left;
     background-color: rgb(37, 35, 48);
     color: white;
+}
+
+.center {
+    text-align: center;
+    margin: auto;
+}
+
+.title {
+    text-align: center;
+    margin: auto;
+    padding: 10px;
 }
