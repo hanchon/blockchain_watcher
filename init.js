@@ -6,7 +6,7 @@ var app = express();
 var DB = require('./db.js');
 var RPC = require('./rpc.js');
 
-var config = require ('./config.json');
+var config = require('./config.json');
 
 // Statistics start here
 const startHeight = config['startHeight'];
@@ -15,11 +15,16 @@ var servers = [];
 var displayData = [];
 
 // Init the servers
+// TODO: make create table async
 let k = 0;
 config['nodes'].forEach(element => {
-    let temp = new DB (element.name + '.db')
+    let temp = new DB(element.name + '.db')
     temp.CreateTable();
-    servers.push({db : temp, rpc : new RPC(element.ip, element.port, element.user, element.pass), id : k});
+    servers.push({
+        db: temp,
+        rpc: new RPC(element.ip, element.port, element.user, element.pass),
+        id: k
+    });
     displayData[k] = {};
     displayData[k].name = element.name;
     displayData[k].ip = element.ip;
@@ -29,9 +34,10 @@ config['nodes'].forEach(element => {
 });
 
 // Close the databases on exit
+// TODO: make close async
 process.on("SIGINT", function () {
     console.log("Closing databases...")
-    servers.forEach(element=>{
+    servers.forEach(element => {
         element.db.Close();
     });
     console.log("Databases closed.")
@@ -41,7 +47,7 @@ process.on("SIGINT", function () {
 // For each server get the last block and all the previous blocks
 async function UpdateDatabases() {
     // TODO: set as mainchain the new blocks, and set as orphan the removed blocks
-    servers.forEach(async function(server) {
+    servers.forEach(async function (server) {
         try {
             let block = await server.rpc.GetLastBlockData();
             displayData[server.id].lastBlock.hash = block['hash'];
@@ -50,13 +56,13 @@ async function UpdateDatabases() {
             let alreadyExists = await server.db.DoesBlockExist(block['hash']);
 
             if (!alreadyExists) {
-                server.db.InsertBlock(block);
+                await server.db.InsertBlock(block);
                 let currentHeight = block['height'];
                 let parentInserted = await server.db.DoesBlockExist(block['prevhash']);
 
-                while (currentHeight > startHeight && !parentInserted ) {
+                while (currentHeight > startHeight && !parentInserted) {
                     let parent = await server.rpc.GetBlockData(block['prevhash']);
-                    server.db.InsertBlock(parent);
+                    await server.db.InsertBlock(parent);
                     currentHeight = currentHeight - 1;
 
                     parentInserted = await server.db.DoesBlockExist(parent['prevhash']);
@@ -66,15 +72,15 @@ async function UpdateDatabases() {
 
             displayData[server.id].data = await server.db.DisplayData();
         } catch (e) {
-            console.log("Error updating database: " +server.db.name+". " + e );
+            console.log("Error updating database: " + server.db.name + ". " + e);
         }
     });
 }
 
 // Update the database every 20 sec
 (async function KeepUpdating() {
-    UpdateDatabases().then(function (){
-        setTimeout(function(){
+    UpdateDatabases().then(function () {
+        setTimeout(function () {
             KeepUpdating();
         }, 1000 * 20);
     });
@@ -87,5 +93,7 @@ app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'pug')
 
 app.get('/', function (req, res) {
-    res.render('index', { block: displayData })
+    res.render('index', {
+        block: displayData
+    })
 })

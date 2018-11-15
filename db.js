@@ -5,24 +5,38 @@ module.exports = class DB {
         this.db = new sqlite3.Database(name);
     }
 
+    async GetAsync(query, params = []) {
+        var this_db = this.db;
+        return new Promise(function (resolve, reject) {
+            this_db.get(query, params, function (err, row) {
+                if (err) {
+                    reject(err);
+                } else
+                    resolve(row);
+            });
+        });
+    };
+
+    // TODO: make close async
     Close() {
         this.db.close();
     }
 
-    CreateTable(reset = false){
-        if (reset) this.db.run("DROP TABLE IF EXISTS blocks");
+    // TODO: make this call async
+    CreateTable() {
         this.db.run("CREATE TABLE IF NOT EXISTS blocks (hash TEXT PRIMARY KEY, size INTEGER, height INTEGER, txns INTEGER, difficulty TEXT, mediantime TEXT, time TEXT, chainwork TEXT, prevhash TEXT, coinbase_script TEXT);");
     }
 
-    InsertBlock (block) {
-        var stmt = this.db.prepare("INSERT OR IGNORE INTO blocks VALUES (?,?,?,?,?,?,?,?,?,?);");
-        stmt.run(block['hash'], block['size'], block['height'], block['txns'], block['difficulty'], block['mediantime'], block['time'], block['chainwork'], block['prevhash'], block['coinbase_script']);
-        stmt.finalize();
+    InsertBlock(block) {
+        let query = "INSERT OR IGNORE INTO blocks VALUES (?,?,?,?,?,?,?,?,?,?);";
+        let params = [block['hash'], block['size'], block['height'], block['txns'], block['difficulty'], block['mediantime'], block['time'], block['chainwork'], block['prevhash'], block['coinbase_script']];
+        return this.GetAsync(query, params);
     }
 
     DoesBlockExist(hash) {
-        return new Promise((resolve,reject) => {
-            this.db.get("SELECT 1 FROM blocks WHERE hash =  ? ", [hash], (err, row) => {
+        var this_db = this.db;
+        return new Promise((resolve, reject) => {
+            this_db.get("SELECT 1 FROM blocks WHERE hash =  ? ", [hash], (err, row) => {
                 if (!err && row) {
                     return resolve(true);
                 }
@@ -32,8 +46,9 @@ module.exports = class DB {
     }
 
     DisplayData() {
-        return new Promise((resolve,reject) => {
-            this.db.all("SELECT * FROM blocks ORDER BY HEIGHT DESC LIMIT 20 ", [], (err, rows) => {
+        var this_db = this.db;
+        return new Promise((resolve, reject) => {
+            this_db.all("SELECT * FROM blocks ORDER BY HEIGHT DESC LIMIT 20 ", [], (err, rows) => {
                 if (!err && rows) {
                     return resolve(rows);
                 }
@@ -44,5 +59,3 @@ module.exports = class DB {
     }
 
 }
-
-
