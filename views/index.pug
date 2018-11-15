@@ -4,36 +4,49 @@ html
     title= "Node status"
   body
     h1= "Node status"
+    h2= "Activation time: 1542300000"
     each val in block
-      h3= val.name 
-      h3= val.ip
-      h3 Current Time
-      h4= "Time: " + val.lastBlock.time + ". Median Time: " + val.lastBlock.medianTime
-      h3 Current tip
-      h4= "Height: " + val.lastBlock.height + ". Hash: " + val.lastBlock.hash
-      table
-          tr 
-            th Hash
-            th Height
-            th Chainwork
-            th Difficulty
-            th Time
-            th MedianTime
-            th Previous Hash
-            th Transactions
-            th Size
+      if val.name == "BitcoinABC" || val.name == "BitcoinSV"
+        h3= val.name 
+        //- h3= val.ip
+        h3 Current Time
+        h4= "Time: " + val.lastBlock.time + ". Median Time: " + val.lastBlock.medianTime
+        h3 Current tip
+        h4= "Height: " + val.lastBlock.height + ". Hash: " + val.lastBlock.hash
+        table
+            tr 
+              th Hash
+              th Height
+              th Chainwork
+              th Difficulty
+              th Time
+              th MedianTime
+              th Previous Hash
+              th Transactions
+              th Size
 
-          each block_data in val.data
-            tr
-              td= block_data.hash
-              td= block_data.height
-              td= block_data.chainwork.replace(/^0+/, '')
-              td= block_data.difficulty
-              td= block_data.time
-              td= block_data.mediantime
-              td= block_data.prevhash
-              td= block_data.txns
-              td= block_data.size
+            each block_data in val.data
+              tr
+                td= block_data.hash
+                td= block_data.height
+                td= block_data.chainwork.replace(/^0+/, '')
+                td= block_data.difficulty
+                td= block_data.time
+                td= block_data.mediantime
+                td= block_data.prevhash
+                td= block_data.txns
+                td= block_data.size
+      else
+        h3= val.name 
+        //- h3= val.ip
+        table
+            tr 
+              th Hash
+              th Height
+            each block_data in val.data
+              tr
+                td= block_data.hash
+                td= block_data.height
 
 
      
