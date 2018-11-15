@@ -22,7 +22,7 @@ config['nodes'].forEach(element => {
     temp.CreateTable();
     servers.push({
         db: temp,
-        rpc: new RPC(element.ip, element.port, element.user, element.pass),
+        rpc: new RPC(element.ip, element.port, element.user, element.pass, element.header),
         id: k
     });
     displayData[k] = {};
@@ -52,6 +52,8 @@ async function UpdateDatabases() {
             let block = await server.rpc.GetLastBlockData();
             displayData[server.id].lastBlock.hash = block['hash'];
             displayData[server.id].lastBlock.height = block['height'];
+            displayData[server.id].lastBlock.medianTime = block['mediantime'];
+            displayData[server.id].lastBlock.time = block['time'];
 
             let alreadyExists = await server.db.DoesBlockExist(block['hash']);
 
@@ -61,7 +63,7 @@ async function UpdateDatabases() {
                 let parentInserted = await server.db.DoesBlockExist(block['prevhash']);
 
                 while (currentHeight > startHeight && !parentInserted) {
-                    let parent = await server.rpc.GetBlockData(block['prevhash']);
+                    let parent = await server.rpc.GetBlockData(block['prevhash'], block["height"] - 1);
                     await server.db.InsertBlock(parent);
                     currentHeight = currentHeight - 1;
 
